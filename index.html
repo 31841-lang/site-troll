@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParenteGPT - A IA do Almoço de Família</title>
+  <meta name="description" content="A IA que transforma qualquer conversa em perguntas sobre casamento, emprego, salário e filhos.">
+
+  <!-- ==========================================
+       ESTILOS CSS (INLINE, ZERO EXTERNAL DEPENDENCIES)
+       ========================================== -->
+  <style>
+    /* Reset & Variáveis */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-cream: #FAF6ED;
+      --bg-card: #FFFFFF;
+      --text-main: #2D1E16;
+      --text-muted: #6B5547;
+      --tomato-red: #B82814;
+      --tomato-hover: #9E1F0F;
+      --basil-green: #2E7D32;
+      --basil-light: #E8F5E9;
+      --mustard: #E69A28;
+      --border-warm: #E2D3BE;
+      --shadow-warm: 0 4px 14px rgba(45, 30, 22, 0.08);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      color: var(--text-main);
+      background-color: var(--bg-cream);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Padrão Toalha Xadrez em CSS puro (Sem imagem externa) */
+    .tablecloth-bg {
+      background-color: #FAF4EB;
+      background-image: 
+        linear-gradient(90deg, rgba(184, 40, 20, 0.07) 50%, transparent 50%),
+        linear-gradient(rgba(184, 40, 20, 0.07) 50%, transparent 50%);
+      background-size: 32px 32px;
+    }
+
+    /* Faixa de Aviso Superior */
+    .top-banner {
+      background: var(--tomato-red);
+      color: #FFFFFF;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    /* Contêiner Central */
+    .app-container {
+      max-width: 760px;
+      width: 100%;
+      margin: 16px auto;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    /* Card Principal */
+    .main-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-warm);
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(45, 30, 22, 0.09);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      min-height: 640px;
+    }
+
+    /* Header da Aplicação */
+    .chat-header {
+      padding: 16px 20px;
+      background: #FFFDF9;
+      border-bottom: 2px solid var(--border-warm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+      background: #FAF4EB;
+      border: 1px solid var(--border-warm);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .brand-name {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--tomato-red);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .brand-tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .badge-v2 {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--basil-green);
+      background: var(--basil-light);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(46, 125, 50, 0.3);
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+
+    /* Seletor de Personalidades */
+    .persona-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .persona-label-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    .persona-btn {
+      background: #FAF4EB;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .persona-btn:hover {
+      background: #F3EBDD;
+      border-color: var(--tomato-red);
+    }
+
+    .persona-btn.active {
+      background: var(--tomato-red);
+      color: #FFFFFF;
+      border-color: var(--tomato-red);
+      box-shadow: 0 2px 6px rgba(184, 40, 20, 0.25);
+    }
+
+    /* Painel de Métricas & Intromissão */
+    .metrics-panel {
+      background: #FAF6ED;
+      border: 1px solid var(--border-warm);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .metrics-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .intromission-label {
+      color: var(--tomato-red);
+      font-weight: 800;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 9px;
+      background: #E8DBC9;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, #2E7D32, #E69A28, #B82814);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .counters-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .counters-row strong {
+      color: var(--text-main);
+    }
+
+    /* Barra de Ações Rápidas (Troll Buttons) */
+    .actions-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 16px;
+      background: #FFFDF9;
+      border-bottom: 1px solid var(--border-warm);
+    }
+
+    .btn-action {
+      background: #FFFFFF;
+      border: 1px solid var(--border-warm);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+      position: relative;
+    }
+
+    .btn-action:hover {
+      background: #FAF6ED;
+      border-color: var(--tomato-red);
+      color: var(--tomato-red);
+    }
+
+    /* O botão fujão troll */
+    #btn-fugir {
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+      will-change: transform;
+      user-select: none;
+    }
+
+    /* Chips de Sugestão de Assunto */
+    .chips-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #FAF8F2;
+      border-bottom: 1px solid var(--border-warm);
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chips-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .chip-btn {
+      background: #FFFFFF;
+      border: 1px solid var(--border-warm);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .chip-btn:hover {
+      background: #FAF4EB;
+      border-color: var(--tomato-red);
+      color: var(--tomato-red);
+    }
+
+    /* Área de Mensagens (Chat Scroll) */
+    .messages-area {
+      flex: 1;
+      padding: 20px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #FFFDF9;
+      scroll-behavior: smooth;
+    }
+
+    /* Balões de Mensagem */
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 86%;
+      animation: msgPop 0.25s ease-out forwards;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+    }
+
+    .msg-parente {
+      align-self: flex-start;
+    }
+
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      word-break: break-word;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .msg-user .msg-bubble {
+      background: var(--tomato-red);
+      color: #FFFFFF;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-parente .msg-bubble {
+      background: #FAF6ED;
+      color: var(--text-main);
+      border: 1px solid var(--border-warm);
+      border-left: 4px solid var(--tomato-red);
+      border-bottom-left-radius: 4px;
+    }
+
+    .parente-author {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--tomato-red);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .msg-time {
+      font-size: 0.68rem;
+      margin-top: 3px;
+      opacity: 0.75;
+      text-align: right;
+    }
+
+    .msg-user .msg-time {
+      color: #FFE5E0;
+    }
+
+    .msg-parente .msg-time {
+      color: var(--text-muted);
+    }
+
+    /* Loading Rotativo Engraçado */
+    .loading-container {
+      display: none;
+      align-self: flex-start;
+      background: #FAF6ED;
+      border: 1px solid var(--border-warm);
+      border-left: 4px solid var(--mustard);
+      border-radius: 14px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      align-items: center;
+      gap: 8px;
+      animation: msgPop 0.2s ease-out;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--tomato-red);
+      animation: bounce 1.3s infinite ease-in-out both;
+    }
+
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Área de Input */
+    .input-area {
+      padding: 12px 16px;
+      background: #FFFDF9;
+      border-top: 2px solid var(--border-warm);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      border: 1.5px solid var(--border-warm);
+      border-radius: 12px;
+      background: #FAF6ED;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .chat-input:focus {
+      border-color: var(--tomato-red);
+      background: #FFFFFF;
+    }
+
+    .btn-send {
+      background: var(--tomato-red);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-send:hover {
+      background: var(--tomato-hover);
+    }
+
+    .btn-send:active {
+      transform: scale(0.97);
+    }
+
+    /* Card / Tela de Boas-Vindas */
+    .welcome-card {
+      background: #FAF6ED;
+      border: 2px dashed var(--border-warm);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .welcome-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--tomato-red);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .welcome-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-warm);
+      border-radius: 8px;
+      background: #FFFFFF;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--tomato-red);
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .btn-enter {
+      background: var(--basil-green);
+      color: #FFFFFF;
+      border: none;
+      padding: 9px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-enter:hover {
+      background: #1B5E20;
+    }
+
+    .btn-skip {
+      background: transparent;
+      border: 1px solid var(--border-warm);
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-skip:hover {
+      background: #F0E6D2;
+      color: var(--tomato-red);
+    }
+
+    /* Avisos Satíricos & Rodapé */
+    .satirical-note {
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      background: #FAF6ED;
+      border-top: 1px solid var(--border-warm);
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      padding: 14px 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Modais / Overlays (Banheiro, Fuga, Conquista) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 30, 22, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      border: 3px solid var(--tomato-red);
+      border-radius: 18px;
+      max-width: 440px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--tomato-red);
+    }
+
+    .modal-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .modal-btn {
+      background: var(--tomato-red);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.15s;
+    }
+
+    .modal-btn:hover {
+      background: var(--tomato-hover);
+    }
+
+    /* Notificação Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: var(--text-main);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      z-index: 2000;
+      opacity: 0;
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Acessibilidade & Responsividade */
+    :focus-visible {
+      outline: 3px solid var(--tomato-red);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app-container {
+        padding: 0 6px;
+        margin: 8px auto;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .brand-name {
+        font-size: 1.2rem;
+      }
+      .msg-row {
+        max-width: 94%;
+      }
+      .chat-header {
+        padding: 12px 14px;
+      }
+    }
+  </style>
+</head>
+<body class="tablecloth-bg">
+
+  <!-- AVISO SUPERIOR -->
+  <div class="top-banner">
+    <span>🍰</span>
+    <span>Aviso: Sobremesa só será liberada após responder sobre o concurso e o namoro.</span>
+    <span>🍗</span>
+  </div>
+
+  <div class="app-container">
+    <main class="main-card">
+      
+      <!-- CABEÇALHO DO CHAT -->
+      <header class="chat-header">
+        
+        <div class="brand-row">
+          <div class="brand-title-wrap">
+            <div class="brand-logo-icon">🍰</div>
+            <div>
+              <div class="brand-name">
+                ParenteGPT
+                <span class="badge-v2">v2.0 (a mesma de sempre)</span>
+              </div>
+              <div class="brand-tagline">
+                A IA que transforma qualquer conversa em perguntas sobre casamento, emprego, salário e filhos.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SELETOR DE PERSONALIDADES -->
+        <div class="persona-bar" role="radiogroup" aria-label="Selecione a Personalidade">
+          <span class="persona-label-text">Parente:</span>
+          
+          <button type="button" class="persona-btn active" data-persona="tia" aria-checked="true">
+            <span>👵</span> Tia do Zap
+          </button>
+          
+          <button type="button" class="persona-btn" data-persona="tio" aria-checked="false">
+            <span>👨‍🦰</span> Tio do Pavê
+          </button>
+          
+          <button type="button" class="persona-btn" data-persona="vovo" aria-checked="false">
+            <span>👵☕</span> Vovó
+          </button>
+          
+          <button type="button" class="persona-btn" data-persona="coach" aria-checked="false">
+            <span>🧑‍💼</span> Cunhado Coach
+          </button>
+        </div>
+
+        <!-- PAINEL DE INTROMISSÃO & CONTADORES -->
+        <div class="metrics-panel">
+          <div class="metrics-header">
+            <span>Nível de Intromissão Familiar:</span>
+            <span id="intromission-label" class="intromission-label">Curioso(a) 🙂</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <div class="counters-row">
+            <span>Perguntas invasivas feitas: <strong id="count-perguntas">0</strong></span>
+            <span>Chance de escapar: <strong id="chance-escapar" style="color: var(--tomato-red);">99%</strong></span>
+          </div>
+        </div>
+
+      </header>
+
+      <!-- BARRA DE AÇÕES TROLL -->
+      <div class="actions-bar">
+        <button type="button" id="btn-fugir" class="btn-action">
+          <span>🏃</span> Fugir da conversa
+        </button>
+
+        <button type="button" id="btn-banheiro" class="btn-action">
+          <span>🚽</span> Ir ao banheiro
+        </button>
+
+        <button type="button" id="btn-copiar" class="btn-action">
+          <span>📋</span> Copiar conversa
+        </button>
+
+        <button type="button" id="btn-reiniciar" class="btn-action">
+          <span>🔄</span> Reiniciar almoço
+        </button>
+      </div>
+
+      <!-- CHIPS DE SUGESTÃO -->
+      <div class="chips-container" aria-label="Sugestões de assunto">
+        <span class="chips-title">Sugestões:</span>
+        <button type="button" class="chip-btn" data-text="Como fazer um bolo?">🍰 Como fazer um bolo?</button>
+        <button type="button" class="chip-btn" data-text="Explique a fotossíntese">🌿 Explique a fotossíntese</button>
+        <button type="button" class="chip-btn" data-text="Me ajuda com um código?">💻 Me ajuda com um código?</button>
+        <button type="button" class="chip-btn" data-text="Qual a capital da França?">🗼 Qual a capital da França?</button>
+      </div>
+
+      <!-- ÁREA DE MENSAGENS -->
+      <div id="messages-container" class="messages-area" role="log" aria-live="polite">
+        
+        <!-- TELA / CARD DE BOAS-VINDAS -->
+        <div id="welcome-card" class="welcome-card">
+          <div class="welcome-title">
+            <span>☕</span>
+            <span>Antes de começar, preciso saber algumas coisinhas</span>
+          </div>
+          <p class="welcome-desc">
+            (A gente ia perguntar de qualquer jeito mesmo na hora do pudim...)
+          </p>
+
+          <form id="welcome-form">
+            <div class="form-grid">
+              
+              <div class="form-group">
+                <label for="input-nome" class="form-label">Seu Nome / Apelido:</label>
+                <input type="text" id="input-nome" class="form-control" placeholder="Ex: Lucas" value="Meu Bem">
+              </div>
+
+              <div class="form-group">
+                <label for="input-idade" class="form-label">Sua Idade:</label>
+                <input type="number" id="input-idade" class="form-control" placeholder="Ex: 27" value="28" min="1" max="120">
+              </div>
+
+              <div class="form-group">
+                <label for="input-estado-civil" class="form-label">Estado Civil:</label>
+                <select id="input-estado-civil" class="form-control">
+                  <option value="solteiro(a)">Solteiro(a)</option>
+                  <option value="namorando">Namorando</option>
+                  <option value="noivo(a)">Noivo(a)</option>
+                  <option value="casado(a)">Casado(a)</option>
+                  <option value="é complicado">É complicado</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="input-filhos" class="form-label">Tem Filhos?</label>
+                <select id="input-filhos" class="form-control">
+                  <option value="não tenho">Não tenho</option>
+                  <option value="tenho">Tenho</option>
+                  <option value="ainda não">Ainda não</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="welcome-actions">
+              <button type="submit" class="btn-enter">
+                Entrar na conversa 💬
+              </button>
+              <button type="button" id="btn-skip-welcome" class="btn-skip">
+                Prefiro não responder 🤐
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- MENSAGEM INICIAL DO PARENTE -->
+        <div class="msg-row msg-parente" id="initial-msg">
+          <div class="msg-bubble">
+            <div class="parente-author" id="initial-author">👵 Tia do Zap diz:</div>
+            <p id="initial-text">Bom dia, grupo! Que bom que você sentou aqui na mesa com a gente! Como tá essa vidinha? Me conta tudo!</p>
+            <div class="msg-time" id="initial-time">12:30</div>
+          </div>
+        </div>
+
+        <!-- LOADING ROTATIVO ENGRAÇADO -->
+        <div id="loading-indicator" class="loading-container">
+          <div class="typing-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <span id="loading-phrase">Consultando a prima que casou ano passado…</span>
+        </div>
+
+      </div>
+
+      <!-- FORMULÁRIO DE DIGITAÇÃO -->
+      <form id="chat-form" class="input-area">
+        <label for="user-input" class="visually-hidden" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">Escreva sua mensagem</label>
+        <input 
+          type="text" 
+          id="user-input" 
+          class="chat-input" 
+          placeholder="Fale qualquer assunto inocente (ex: o clima, seu pet, uma receita)..." 
+          autocomplete="off"
+          required
+        >
+        <button type="submit" id="btn-enviar" class="btn-send">
+          <span>Enviar</span>
+          <span>💬</span>
+        </button>
+      </form>
+
+      <!-- AVISO SATÍRICO FIXO -->
+      <div class="satirical-note">
+        ⚠️ ParenteGPT pode cometer perguntas inconvenientes. Verifique com seu psicólogo.
+      </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+      Qualquer semelhança com a sua família é mera coincidência. Ou não. • ParenteGPT ©
+    </footer>
+  </div>
+
+  <!-- MODAL BANHEIRO -->
+  <div id="modal-banheiro" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="banheiro-title">
+    <div class="modal-content">
+      <div class="modal-icon">🚽</div>
+      <h2 id="banheiro-title" class="modal-title">Você correu pro banheiro!</h2>
+      <p class="modal-desc">
+        Você se trancou no banheiro pra respirar fundo, olhar o feed do celular e fugir das perguntas sobre concurso e casamento.
+      </p>
+      <p id="banheiro-countdown" style="font-weight: 800; color: var(--tomato-red); font-size: 1.1rem;">
+        Sua tia bate na porta em: 4s...
+      </p>
+      <button type="button" id="btn-sair-banheiro" class="modal-btn">
+        Voltar pra mesa com cara de paisagem 🏃
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL FUGA CAPTURADA -->
+  <div id="modal-fuga" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="fuga-title">
+    <div class="modal-content">
+      <div class="modal-icon">🍰</div>
+      <h2 id="fuga-title" class="modal-title">Já vai embora?!</h2>
+      <p class="modal-desc">
+        “Fica mais um pouquinho, tem pavê na travessa! Nem conversamos direito... Me diz: quem era aquela pessoa na sua foto do Instagram?”
+      </p>
+      <button type="button" id="btn-fechar-fuga" class="modal-btn">
+        Aceitar um pedaço de pavê e voltar 🍮
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL CONQUISTA 10 PERGUNTAS -->
+  <div id="modal-conquista" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="conquista-title">
+    <div class="modal-content">
+      <div class="modal-icon">🍮🎉</div>
+      <h2 id="conquista-title" class="modal-title">Conquista Desbloqueada!</h2>
+      <p class="modal-desc" style="font-weight: 800; color: var(--basil-green); font-size: 1.05rem;">
+        “Você sobreviveu a 10 perguntas invasivas!”
+      </p>
+      <p class="modal-desc">
+        Você conquistou: <strong>Prato de Pavê Virtual com Uva-Passa</strong>! Sua resistência emocional em almoço de domingo é lendária.
+      </p>
+      <button type="button" id="btn-fechar-conquista" class="modal-btn">
+        Pegar o prato de pavê e continuar ouvindo 🍮
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST DE NOTIFICAÇÃO -->
+  <div id="app-toast" class="toast-msg">Mensagem copiada!</div>
+
+  <!-- ==========================================
+       JAVASCRIPT LOCAL (INLINE, ZERO BACKEND/API)
+       ========================================== -->
+  <script>
+    /* =========================================================================
+       BANCO DE FRASES DO PARENTEGPT (MAIS DE 110 FRASES ORGANIZADAS POR TEMA)
+       ========================================================================= */
+
+    // Frases rotativas de carregamento cômico
+    const LOADING_PHRASES = [
+      "Consultando a prima que casou ano passado…",
+      "Ligando pra tia pra confirmar a fofoca…",
+      "Calculando há quantos anos você devia ter filho…",
+      "Verificando se o filho da vizinha já passou num concurso melhor…",
+      "Contando quantas latinhas de cerveja já foram na churrasqueira…",
+      "Ajustando o óculos na ponta do nariz pra te olhar torto…",
+      "Procurando fotos suas de 2017 no Facebook…",
+      "Consultando Santo Antônio no SPC do amor…"
+    ];
+
+    // Personalidades com prefixos, sufixos e 10+ frases exclusivas
+    const PERSONALITIES = {
+      tia: {
+        name: "Tia do Zap",
+        avatar: "👵",
+        audioNote: "*(áudio encaminhado de 4 minutos gravado na feira)*",
+        exclusivePhrases: [
+          "Bom dia, grupo! Que a semana seja abençoada com um casamento no cartório pra você!",
+          "Menino(a), recebi um vídeo no Zap que diz que quem não casa até os trinta perde colágeno!",
+          "Vou te mandar no privado a foto do sobrinho da Neide da farmácia, pessoa de Deus!",
+          "Você fica tanto nesse celular... Por que não usa o Zap pra achar uma pessoa séria?",
+          "A vizinha me disse que o filho dela já noivou. Chorei tanto no telefone pensando em você!",
+          "Se você quiser, peço pro padre rezar uma intenção pro seu namoro na missa das sete!",
+          "Encaminhei uma corrente de Santo Antônio com 14 rosas pra você. Se não repassar, fica solteiro(a)!",
+          "Tira uma foto bonita com a tia agora pra eu postar no Status do Zap com música de louvor!",
+          "A tia só quer o seu bem, meu amorzinho! Come mais esse pedaço de empadão e abre o jogo!",
+          "Disseram no grupo das comadres que tem vaga de concursado no posto de saúde. Você vai fazer?"
+        ]
+      },
+      tio: {
+        name: "Tio do Pavê",
+        avatar: "👨‍🦰",
+        audioNote: "*(estalando a latinha de cerveja e ajeitando a bermuda)*",
+        exclusivePhrases: [
+          "É pavê ou pacumê? Hahaha! Mas falando sério: e o salário, dá pra pagar o churrasco?",
+          "Com a sua idade eu já tinha dois terrenos em Guarapari e um Gol quadrado quitado!",
+          "Carteira assinada com FGTS ou tá nessa modinha de PJ que não dá aposentadoria?",
+          "Corta o cafezinho gourmet de padaria que em cinco anos você compra um lote!",
+          "Chefe chato todo mundo tem, rapaz/moça! O segredo é aguentar o tranco até o décimo terceiro!",
+          "Você trabalha no computador o dia todo mas cadê o produto físico? Onde que eu pego nisso?",
+          "Gasolina a sete reais e você ainda não comprou consórcio de moto? Tá moscando!",
+          "Futebol no domingo sem falar de holerite não tem graça nenhuma! Quanto cai líquido aí?",
+          "Quem inventou esse negócio de home office não sabe o que é pegar dois ônibus na chuva!",
+          "Se você não passar num concurso do Banco do Brasil agora, depois dos quarenta o mercado fecha!"
+        ]
+      },
+      vovo: {
+        name: "Vovó",
+        avatar: "👵☕",
+        audioNote: "*(ajeitando o xale e oferecendo um cafezinho quente)*",
+        exclusivePhrases: [
+          "Meu pedacinho de céu, a vovó não sabe se vai estar viva pra ver os seus bisnetinhos...",
+          "Come mais um prato de maionese, meu anjo! Você tá tão magrinho(a), ninguém cuida de você?",
+          "O padre perguntou de você no domingo... Ele disse que tem uma moça/um rapaz bom na catequese!",
+          "Nos meus tempos as coisas eram tão simples: namorava no portão, noivava e tinha seis filhos!",
+          "Eu fiz uma promessa lá em Aparecida pra te ver de véu e grinalda ou terno no altar!",
+          "Deus te abençoe, minha vida. Mas casa vazia de criança é igreja sem sino no domingo...",
+          "Toma esse potinho de doce de abóbora. Guarda um pouco pra pessoa que vai te pedir em namoro!",
+          "Minha pressão sobe só de pensar que você pode ficar sozinho(a) nesse mundão de meu Deus!",
+          "A vovó já bordou 12 panos de prato pro seu enxoval. Quando é que a gente marca o casório?",
+          "Você estuda tanto, filhinho(a)... Mas quem é que vai segurar a sua mão na velhice?"
+        ]
+      },
+      coach: {
+        name: "Cunhado Coach",
+        avatar: "🧑‍💼",
+        audioNote: "*(ajustando o smartwatch e abrindo planilha de dividendos)*",
+        exclusivePhrases: [
+          "Cara, sem querer ser invasivo, mas teu mindset financeiro tá completamente desalinhado!",
+          "Qual é o teu faturamento anual em dólares? Porque ficar em CLT no Brasil é custo de oportunidade puro!",
+          "Casamento moderno é fusão patrimonial com separação total de bens. Você já montou essa holding?",
+          "Se você não gera renda passiva enquanto dorme, vai trabalhar até os oitenta anos na edícula!",
+          "Ter filho único gera risco de concentração de capital. Tem que ter no mínimo dois herdeiros!",
+          "Eu fiz um bootcamp intensivo em Cingapura e dobrei meu equity. Qual teu plano de carreira?",
+          "Você passa duas horas no trânsito sem ouvir podcast de economia? Por isso o salário não escala!",
+          "Seu networking amoroso tá estagnado no Tinder básico. Você tem que frequentar eventos da Faria Lima!",
+          "Cachorro e gato geram passivo fixo sem nenhum ganho de escala na vida. Cadê o filho?",
+          "Você precisa virar essa chave mental agora mesmo, meu irmão! Me mostra teu extrato de investimentos!"
+        ]
+      }
+    };
+
+    // Respostas temáticas por palavras-chave
+    const KEYWORD_RULES = [
+      {
+        theme: "trabalho",
+        keywords: ["trabalho", "trabalhar", "emprego", "chefe", "empresa", "home office", "firma", "trampo", "reuniao", "demissao", "promocao"],
+        reaction: "Trabalho é bom e dignifica, mas...",
+        pivots: [
+          "mas me diz uma coisa que a mesa toda quer saber: quanto é que tá caindo líquido na sua conta todo dia 5?",
+          "trabalhar tanto desse jeito pra que se não sobra tempo pra arrumar um(a) pretendente de respeito?",
+          "o filho da dona Neide trabalha na mesma área e já é gerente regional com carro da empresa. Você não pede aumento?",
+          "trabalho não esquenta o pé na cama no inverno, sabia? Quando é que sai esse casamento?"
+        ],
+        bonus: "E plano de saúde na firma, tem cobertura pra dependente e filho ou nem isso?"
+      },
+      {
+        theme: "cansado",
+        keywords: ["cansado", "cansada", "sono", "estresse", "estressado", "estressada", "exausto", "exausta", "fadiga", "dor"],
+        reaction: "Ai meu amor, cansado(a) com essa idade?",
+        pivots: [
+          "isso aí é falta de casar e ter uma pessoa companheira pra te fazer um cafuné e dividir as contas!",
+          "com a sua idade eu acordava às 5h da manhã de segunda a sábado e ainda jogava futebol na várzea!",
+          "cansaço passa na hora que você assinar a carteira num concurso público com estabilidade e horário fixo!",
+          "se tá cansado(a) agora, imagina quando vierem os gêmeos chorando de madrugada pedindo mamadeira!"
+        ],
+        bonus: "E remédio de farmácia tá caro, né? O salário tá dando pra bancar a saúde?"
+      },
+      {
+        theme: "comida",
+        keywords: ["comida", "receita", "bolo", "pizza", "almoco", "jantar", "churrasco", "pave", "cozinhar", "fome", "doce"],
+        reaction: "Hummm, que delícia de assunto!",
+        pivots: [
+          "mas me fala: pra quem você vai cozinhar essas coisas gostosas? Já tem alguém especial pra provar?",
+          "cozinha tão bem assim... tá mais do que na hora de casar e abrir a sua própria cozinha de família!",
+          "churrasco bom é churrasco pago com bônus de cargo comissionado! E o concurso da Caixa?",
+          "quem come sozinho engorda a alma! Cadê o namorado(a) pra dividir a sobremesa no domingo?"
+        ],
+        bonus: "E quem é que lava a louça na sua casa durante a semana?"
+      },
+      {
+        theme: "viagem",
+        keywords: ["viagem", "viajar", "ferias", "praia", "aviao", "hotel", "passeio", "turismo", "mala", "feriado"],
+        reaction: "Viajar é muito bom, enriquece a mente!",
+        pivots: [
+          "mas você vai viajar sozinho(a)? Uma pessoa tão jovem batendo perna sem um par romântico do lado dá até dó!",
+          "com o dinheiro dessa passagem aí você dava entrada num terreno pra construir a casa dos seus filhos!",
+          "falando em mala... essa mala tá com cara de lua-de-mel em Gramado! Quando é que sai a data?",
+          "viajar em feriado prolongado gasta uma nota! O salário tá sobrando tanto assim pra esbanjar?"
+        ],
+        bonus: "Não vai inventar de trazer lembrancinha cara pros primos sem guardar na poupança, hein!"
+      },
+      {
+        theme: "estudo",
+        keywords: ["faculdade", "curso", "estudo", "estudar", "prova", "tcc", "enem", "pos", "mestrado", "diploma"],
+        reaction: "Estudar é bonito, dá orgulho!",
+        pivots: [
+          "mas e depois que pegar esse diploma aí, vai ganhar quanto de verdade? Tem mercado ou é só título?",
+          "diploma na parede é lindo, mas não substitui a certidão de casamento na igreja com bênção do padre!",
+          "você estuda há dez anos e até agora eu não vi uma aprovação no Diário Oficial da União!",
+          "estuda tanto que não sobra tempo pra dar netinho pra sua mãe mimar no carrinho de bebê!"
+        ],
+        bonus: "A mensalidade desse curso você paga com o seu suor ou seus pais ainda tão bancando?"
+      },
+      {
+        theme: "dinheiro",
+        keywords: ["dinheiro", "aluguel", "investir", "investimento", "banco", "comprar", "gasto", "caro", "poupanca", "cartao"],
+        reaction: "Falando em finanças e futuro...",
+        pivots: [
+          "já pensou em parar de pagar aluguel e financiar logo uma casa própria de três quartos pra criar os filhos?",
+          "investir em aplicativo é bonito, mas terra e tijolo ninguém tira! Quanto você tem guardado na caderneta?",
+          "se você casasse logo, dividia as contas da casa por dois e sobrava o dobro no fim do mês!",
+          "o filho da vizinha já comprou apartamento na planta aos 24 anos. O que você tá esperando?"
+        ],
+        bonus: "Mostra o extrato do banco pro seu tio auditar se você não tá gastando tudo em delivery!"
+      },
+      {
+        theme: "pet",
+        keywords: ["pet", "cachorro", "gato", "cachorrinho", "gatinho", "adotei", "filhote", "veterinario", "racao"],
+        reaction: "Ai que fofura de bichinho peludo!",
+        pivots: [
+          "bichinho é bom treino pra ter filho, mas cachorro não te visita no asilo quando você ficar velho(a)!",
+          "gastar trezentos reais em banho e tosa de cachorro? Esse dinheiro pagava a fralda do seu primeiro bebê!",
+          "muito lindo o pet, mas cachorro não herda sobrenome de família nem senta na ceia de Natal!",
+          "agora que já tem o animalzinho, só falta arrumar o marido/esposa pra completar o comercial de margarina!"
+        ],
+        bonus: "E quem cuida do cachorro quando você vai trabalhar fora o dia todo?"
+      },
+      {
+        theme: "tecnologia",
+        keywords: ["programar", "codigo", "programacao", "tecnologia", "ia", "inteligencia artificial", "computador", "celular", "software"],
+        reaction: "Essa tal de tecnologia moderna é uma loucura!",
+        pivots: [
+          "mas me diz: dá dinheiro de verdade isso aí? Tem carteira assinada certinho com INSS ou é bico?",
+          "você mexe com internet o dia todo mas até agora não usou a internet pra achar uma pessoa boa pra casar!",
+          "robô e computador qualquer um mexe, quero ver é passar na prova de analista da Receita Federal!",
+          "fica conversando com essa IA na tela... inteligência artificial não faz cafuné nem te dá café quentinho!"
+        ],
+        bonus: "Conserta a impressora do tio ali no quarto depois do almoço que tá falhando a tinta?"
+      },
+      {
+        theme: "saudacao",
+        keywords: ["oi", "ola", "bom dia", "boa tarde", "boa noite", "opa", "e ai", "tudo bem"],
+        reaction: "Oi, meu bem! Que bênção você falar comigo!",
+        pivots: [
+          "mas me conta logo: e o namoradinho(a), como tá? Tá namorando sério ou tá só na enrolação?",
+          "tudo bem nada, a família inteira quer saber é quando vai ter festa de casamento com bolo de noiva!",
+          "aproveitando que você deu oi: você ainda tá naquele mesmo emprego ou finalmente arrumou um que pague bem?",
+          "já tomou um prato de comida? E as crianças na casa, pra quando ficou a encomenda?"
+        ],
+        bonus: "Senta aqui perto de mim no sofá pra gente conversar de perto sem fugir!"
+      },
+      {
+        theme: "esquiva",
+        keywords: ["para", "chega", "nao quero falar", "para de perguntar", "muda de assunto", "que saco", "inconveniente"],
+        reaction: "Epa! Ficou bravinho(a) por quê?",
+        pivots: [
+          "mudando de assunto tão rápido assim? Quem não deve não teme! Tá escondendo namoro ou demissão?",
+          "a família só pergunta porque se preocupa com o seu futuro, coração! Mas me diz: e o concurso?",
+          "pode tentar desconversar, mas na ceia de Natal a cobrança vem em dobro com os outros parentes reunidos!",
+          "se você não quer falar de casamento, então abre o jogo: quanto você tá ganhando por mês?"
+        ],
+        bonus: "Respira fundo e toma um copo d’água que a conversa tá só começando!"
+      },
+      {
+        theme: "namorando_sim",
+        keywords: ["tenho namorado", "tenho namorada", "estou namorando", "to namorando", "namoro", "noivo", "noiva", "casei"],
+        reaction: "AI MEU DEUS, QUE MARAVILHA!",
+        pivots: [
+          "e casa quando?! Namorar anos a fio sem marcar data na igreja é só enrolação! Cadê a aliança de ouro?",
+          "já apresentou pros seus pais? O que a família dessa pessoa faz da vida? Tem bens quitados?",
+          "agora que tá com par garantido, quando é que a gente encomendam o primeiro bisneto pra chorar no berço?",
+          "casamento tá pela hora da morte! Vocês já tão guardando dinheiro pro buffet ou vão pedir ajuda pros tios?"
+        ],
+        bonus: "Traz essa pessoa pro almoço de domingo que o tio quer fazer uma sabatina completa!"
+      },
+      {
+        theme: "solteiro_sim",
+        keywords: ["sou solteiro", "sou solteira", "estou solteiro", "to solteiro", "solteirice", "sem ninguem"],
+        reaction: "Solteiro(a)? Mas como assim, criatura?!",
+        pivots: [
+          "uma pessoa tão bonita, com dente na boca e estudo na cabeça! Você é exigente demais, isso sim!",
+          "quem escolhe muito acaba ficando pra titia com sete gatos na sala! Abaixa um pouco essa régua!",
+          "o tempo tá passando no cronômetro da vida e até o padre que te batizou tá preocupado com você!",
+          "se você quiser, passo seu telefone agora pro sobrinho da comadre que é trabalhador e tem moto!"
+        ],
+        bonus: "Domingo que vem eu trago uma foto de um pretendente de família boa pra você ver!"
+      },
+      {
+        theme: "filhos_nao",
+        keywords: ["nao tenho filhos", "nao quero filhos", "sem filhos", "sem crianca"],
+        reaction: "Não quer filhos agora?! Mas que ideia é essa?",
+        pivots: [
+          "ainda dá tempo, mas o relógio biológico não anda de marcha ré! Depois gasta uma fortuna em clínica!",
+          "filho é a maior bênção que Deus bota na terra! Onde come um, comem dois e a comida nunca falta!",
+          "sua mãe já tá com a aposentadoria saindo e precisa de um netinho pra ocupar a cabeça na varanda!",
+          "quem não tem filhos morre sozinho sem ninguém pra rezar uma Ave Maria no velório, meu bem!"
+        ],
+        bonus: "A vovó já tá com o sapatinho de tricô amarelo pronto esperando você tomar juízo!"
+      },
+      {
+        theme: "ganho_pouco",
+        keywords: ["ganho pouco", "salario baixo", "sem dinheiro", "to duro", "to quebrada", "to quebrado", "nao sobra nada"],
+        reaction: "Eu bem que avisei tanto você!",
+        pivots: [
+          "eu cansei de falar pra você prestar concurso público pro Banco do Brasil ou pra Caixa e você não me ouviu!",
+          "ganha pouco porque não pede aumento com firmeza na mesa do chefe! Na minha época a gente brigava por comissão!",
+          "se cortar a cerveja artesanal e o delivery japonês do fim de semana, o salário dobra no fim do mês!",
+          "e com esse salário apertado aí, quem é que vai querer casar com você pra passar aperto a dois?"
+        ],
+        bonus: "Se precisar, a vó te dá vinte reais da aposentadoria pra você inteirar o pão..."
+      },
+      {
+        theme: "ganho_muito",
+        keywords: ["ganho bem", "ganho muito", "salario bom", "to rico", "rico", "subi de cargo", "comprei carro"],
+        reaction: "Olha só, tá milionário(a) então!",
+        pivots: [
+          "se tá ganhando tão bem assim, então no próximo domingo o churrasco com picanha e cerveja é por sua conta!",
+          "com essa dinheirama toda caindo na conta, por que ainda não comprou uma aliança de brilhante pra casar?",
+          "cuidado com o leão da Receita Federal! Você já declarou o imposto ou vai cair na malha fina por besteira?",
+          "dinheiro na mão de gente solteira voa pro ralo! Casa logo com alguém de confiança pra segurar o patrimônio!"
+        ],
+        bonus: "Empresta uma graninha pro seu primo aqui montar a oficina mecânica dele?"
+      }
+    ];
+
+    // Fallbacks genéricos caso a mensagem não bata com nenhuma palavra-chave
+    const GENERIC_PIVOTS = [
+      {
+        reaction: "{nome}, muito interessante tudo isso aí que você digitou...",
+        pivot: "mas mudando de pato pra ganso, que a família não aguenta mais guardar segredo: e o namoradinho(a), quando você apresenta?",
+        bonus: "E o emprego lá, tá dando pra pagar as continhas em dia?"
+      },
+      {
+        reaction: "Pois é, a vida tem dessas coisas modernas...",
+        pivot: "mas com {idade} anos nas costas eu já tinha dois filhos no colo e o carnê da casa própria quase quitado! E você?",
+        bonus: "O que tá faltando pra você tomar um rumo definitivo na vida adulta?"
+      },
+      {
+        reaction: "Tudo muito bonito na teoria, meu anjo...",
+        pivot: "só que o filho da vizinha já passou no concurso do Tribunal de Justiça e tá noivando no fim do ano. Você não se cobra?",
+        bonus: "Ah, e me diz: você tá conseguindo guardar alguma coisa na poupança ou gasta tudo?"
+      },
+      {
+        reaction: "Acho graça você falar disso aí no meio do almoço...",
+        pivot: "enquanto a sua mãe vive me dizendo no telefone que reza todo santo dia pra ver você com aliança no dedo e netinho no colo!",
+        bonus: "Não faz essa cara de paisagem pra tia não, que eu te conheço desde o berço!"
+      },
+      {
+        reaction: "Beleza, conversa fiada de domingo é boa pra abrir o apetite...",
+        pivot: "mas vamos falar de coisas sérias de gente grande: quanto é que você tá tirando líquido por mês hoje em dia?",
+        bonus: "E os filhos, vão ficar só pra depois dos quarenta quando a coluna já tiver travada?"
+      },
+      {
+        reaction: "Olha só que coisa...",
+        pivot: "você desconversa de um jeito tão elegante, mas a pergunta que não quer calar na mesa é: vai ficar pra titia/tiozão mesmo?",
+        bonus: "Depois não diz que a família não avisou quando o tempo passar voando!"
+      }
+    ];
+
+    /* =========================================================================
+       ESTADO DA APLICAÇÃO & CONTROLE
+       ========================================================================= */
+    const state = {
+      profile: {
+        nome: "Meu Bem",
+        idade: "28",
+        estadoCivil: "solteiro(a)",
+        filhos: "não tenho",
+        completedOnboarding: false
+      },
+      currentPersona: "tia",
+      questionsCount: 0,
+      escapeChance: 99,
+      intromissionLevel: 10, // 0 a 100
+      isTyping: false,
+      recentPhrases: new Set(),
+      inactivityTimer: null,
+      unlockedAchievement: false
+    };
+
+    // Referências do DOM
+    const messagesContainer = document.getElementById("messages-container");
+    const chatForm = document.getElementById("chat-form");
+    const userInput = document.getElementById("user-input");
+    const loadingIndicator = document.getElementById("loading-indicator");
+    const loadingPhrase = document.getElementById("loading-phrase");
+    const intromissionLabel = document.getElementById("intromission-label");
+    const progressFill = document.getElementById("progress-fill");
+    const countPerguntas = document.getElementById("count-perguntas");
+    const chanceEscapar = document.getElementById("chance-escapar");
+
+    // Inicialização
+    document.addEventListener("DOMContentLoaded", () => {
+      initWelcomeForm();
+      initPersonaSelector();
+      initChat();
+      initTrollButtons();
+      initChips();
+      resetInactivityTimer();
+    });
+
+    /* =========================================================================
+       1. FORMULÁRIO DE BOAS-VINDAS (ONBOARDING)
+       ========================================================================= */
+    function initWelcomeForm() {
+      const form = document.getElementById("welcome-form");
+      const skipBtn = document.getElementById("btn-skip-welcome");
+      const welcomeCard = document.getElementById("welcome-card");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const nomeVal = document.getElementById("input-nome").value.trim();
+        const idadeVal = document.getElementById("input-idade").value.trim();
+        const civilVal = document.getElementById("input-estado-civil").value;
+        const filhosVal = document.getElementById("input-filhos").value;
+
+        if (nomeVal) state.profile.nome = nomeVal;
+        if (idadeVal) state.profile.idade = idadeVal;
+        state.profile.estadoCivil = civilVal;
+        state.profile.filhos = filhosVal;
+        state.profile.completedOnboarding = true;
+
+        welcomeCard.style.display = "none";
+        appendParenteBubble(
+          `Ah, então você se chama ${state.profile.nome}, tem ${state.profile.idade} anos e tá ${state.profile.estadoCivil}! A família já tava sabendo metade disso, mas é bom ouvir da sua boca. E me diz: o que você tem feito da vida?`,
+          "Entrada no almoço"
+        );
+        showToast("Dados anotados no caderninho da família!");
+      });
+
+      skipBtn.addEventListener("click", () => {
+        welcomeCard.style.display = "none";
+        state.profile.completedOnboarding = true;
+        appendParenteBubble(
+          "Hummm... 'Prefiro não responder'?! Tá escondendo o quê da sua família, criatura? Quem não deve não teme! Mas não tem problema, a gente descobre até a hora da sobremesa. Fala aí, o que você tem pra me contar?",
+          "Desconfiança ativada"
+        );
+        showToast("A tia já ligou o radar de desconfiança!");
+      });
+    }
+
+    /* =========================================================================
+       2. SELETOR DE PERSONALIDADES
+       ========================================================================= */
+    function initPersonaSelector() {
+      const personaBtns = document.querySelectorAll(".persona-btn");
+      personaBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = btn.getAttribute("data-persona");
+          if (target === state.currentPersona) return;
+
+          personaBtns.forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-checked", "false");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-checked", "true");
+
+          const oldPersona = PERSONALITIES[state.currentPersona].name;
+          state.currentPersona = target;
+          const newPersona = PERSONALITIES[target].name;
+
+          // Troca de personagem gera comentário no chat
+          appendParenteBubble(
+            `*(Chamou reforço na mesa! Saiu ${oldPersona} e puxou a cadeira ${newPersona} com prato na mão)* O assunto agora ficou sério!`,
+            "Troca de Parente"
+          );
+          showToast(`Agora falando com: ${newPersona}`);
+        });
+      });
+    }
+
+    /* =========================================================================
+       3. CHAT & PROCESSAMENTO DE RESPOSTAS
+       ========================================================================= */
+    function initChat() {
+      chatForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        handleUserMessage();
+      });
+    }
+
+    function handleUserMessage() {
+      const text = userInput.value.trim();
+      if (!text || state.isTyping) return;
+
+      userInput.value = "";
+      resetInactivityTimer();
+
+      // Renderiza mensagem do usuário com textContent (proteção contra XSS)
+      appendUserBubble(text);
+
+      // Inicia loading engraçado
+      state.isTyping = true;
+      loadingIndicator.style.display = "flex";
+
+      let loadingStep = 0;
+      const loadingInterval = setInterval(() => {
+        loadingStep++;
+        loadingPhrase.textContent = LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)];
+      }, 650);
+
+      // Tempo de raciocínio da IA familiar
+      const delay = 1300 + Math.random() * 800;
+
+      setTimeout(() => {
+        clearInterval(loadingInterval);
+        loadingIndicator.style.display = "none";
+        state.isTyping = false;
+
+        // Gera a resposta em 2 ou 3 partes
+        generateAndAppendResponse(text);
+
+        // Atualiza métricas
+        incrementMetrics();
+      }, delay);
+    }
+
+    function appendUserBubble(text) {
+      const row = document.createElement("div");
+      row.className = "msg-row msg-user";
+
+      const bubble = document.createElement("div");
+      bubble.className = "msg-bubble";
+
+      const p = document.createElement("p");
+      p.textContent = text; // SEGURO: textContent contra XSS
+
+      const time = document.createElement("div");
+      time.className = "msg-time";
+      time.textContent = getCurrentTime();
+
+      bubble.appendChild(p);
+      bubble.appendChild(time);
+      row.appendChild(bubble);
+
+      messagesContainer.appendChild(row);
+      scrollToBottom();
+    }
+
+    function appendParenteBubble(text, customSubtitle) {
+      const persona = PERSONALITIES[state.currentPersona];
+      const row = document.createElement("div");
+      row.className = "msg-row msg-parente";
+
+      const bubble = document.createElement("div");
+      bubble.className = "msg-bubble";
+
+      const author = document.createElement("div");
+      author.className = "parente-author";
+      author.textContent = `${persona.avatar} ${persona.name} ${customSubtitle ? `(${customSubtitle})` : ""}:`;
+
+      const p = document.createElement("p");
+      p.textContent = text; // SEGURO: textContent contra XSS
+
+      const time = document.createElement("div");
+      time.className = "msg-time";
+      time.textContent = getCurrentTime();
+
+      bubble.appendChild(author);
+      bubble.appendChild(p);
+      bubble.appendChild(time);
+      row.appendChild(bubble);
+
+      messagesContainer.appendChild(row);
+      scrollToBottom();
+    }
+
+    /* Motor de Regras e Template Variables */
+    function generateAndAppendResponse(userText) {
+      const normalized = normalizeText(userText);
+      const persona = PERSONALITIES[state.currentPersona];
+
+      let matchedRule = null;
+      for (const rule of KEYWORD_RULES) {
+        if (rule.keywords.some(kw => normalized.includes(normalizeText(kw)))) {
+          matchedRule = rule;
+          break;
+        }
+      }
+
+      // 30% de chance de puxar frase exclusiva da personalidade ativa se o nível de intromissão for alto
+      const useExclusive = Math.random() < 0.35;
+      if (useExclusive && persona.exclusivePhrases && persona.exclusivePhrases.length > 0) {
+        const excl = pickNonRepeating(persona.exclusivePhrases, `excl_${state.currentPersona}`);
+        const formatted = interpolateVariables(excl);
+        appendParenteBubble(formatted);
+        return;
+      }
+
+      if (matchedRule) {
+        // Balão 1: Reação fingindo ajudar
+        const reaction = interpolateVariables(matchedRule.reaction);
+        
+        // Balão 2: Pivô inevitável
+        const pivotChoice = pickNonRepeating(matchedRule.pivots, `pivot_${matchedRule.theme}`);
+        const pivot = interpolateVariables(pivotChoice);
+
+        appendParenteBubble(`${reaction} ${pivot}`);
+
+        // Balão 3: Bônus inconveniente se a intromissão estiver média/alta
+        if (state.intromissionLevel >= 40 && matchedRule.bonus && Math.random() > 0.3) {
+          setTimeout(() => {
+            const bonusText = interpolateVariables(`Ah, e outra coisa: ${matchedRule.bonus}`);
+            appendParenteBubble(bonusText, "Estocada bônus");
+          }, 350);
+        }
+
+      } else {
+        // Fallback genérico
+        const generic = pickNonRepeating(GENERIC_PIVOTS, "generic");
+        const reaction = interpolateVariables(generic.reaction);
+        const pivot = interpolateVariables(generic.pivot);
+
+        appendParenteBubble(`${reaction} ${pivot}`);
+
+        if (generic.bonus && Math.random() > 0.4) {
+          setTimeout(() => {
+            const bonusText = interpolateVariables(generic.bonus);
+            appendParenteBubble(bonusText, "Lembrete da tia");
+          }, 350);
+        }
+      }
+    }
+
+    function interpolateVariables(template) {
+      if (!template) return "";
+      return template
+        .replace(/{nome}/g, state.profile.nome)
+        .replace(/{idade}/g, state.profile.idade)
+        .replace(/{estadoCivil}/g, state.profile.estadoCivil)
+        .replace(/{filhos}/g, state.profile.filhos);
+    }
+
+    function normalizeText(text) {
+      return (text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function pickNonRepeating(list, key) {
+      if (!list || list.length === 0) return "";
+      let item;
+      let attempts = 0;
+      do {
+        item = list[Math.floor(Math.random() * list.length)];
+        attempts++;
+      } while (state.recentPhrases.has(item) && attempts < 10);
+
+      state.recentPhrases.add(item);
+      if (state.recentPhrases.size > 25) {
+        const first = state.recentPhrases.values().next().value;
+        state.recentPhrases.delete(first);
+      }
+      return item;
+    }
+
+    /* =========================================================================
+       4. MÉTRICAS: NÍVEL DE INTROMISSÃO & CHANCE DE ESCAPAR
+       ========================================================================= */
+    function incrementMetrics() {
+      state.questionsCount++;
+      countPerguntas.textContent = state.questionsCount;
+
+      // Chance de escapar só diminui (99% -> 1%)
+      const escapeDrop = Math.floor(Math.random() * 8) + 6;
+      state.escapeChance = Math.max(1, state.escapeChance - escapeDrop);
+      chanceEscapar.textContent = `${state.escapeChance}%`;
+
+      // Barra de intromissão sobe a cada resposta (10% -> 100%)
+      state.intromissionLevel = Math.min(100, state.intromissionLevel + 11);
+      progressFill.style.width = `${state.intromissionLevel}%`;
+
+      // Rótulos dinâmicos
+      if (state.intromissionLevel < 25) {
+        intromissionLabel.textContent = "Curioso(a) 🙂";
+      } else if (state.intromissionLevel < 45) {
+        intromissionLabel.textContent = "Interessado(a) 🧐";
+      } else if (state.intromissionLevel < 70) {
+        intromissionLabel.textContent = "Tio do Pavê 👨‍🦰";
+      } else if (state.intromissionLevel < 90) {
+        intromissionLabel.textContent = "Sogra em potencial 🫣";
+      } else {
+        intromissionLabel.textContent = "Modo Vó Máxima 👵🚨";
+      }
+
+      // Conquista aos 10 pontos
+      if (state.questionsCount >= 10 && !state.unlockedAchievement) {
+        state.unlockedAchievement = true;
+        setTimeout(() => {
+          showModal("modal-conquista");
+        }, 800);
+      }
+    }
+
+    /* =========================================================================
+       5. RECURSOS TROLL (FUGIR, BANHEIRO, COPIAR, REINICIAR)
+       ========================================================================= */
+    function initTrollButtons() {
+      const btnFugir = document.getElementById("btn-fugir");
+      const btnBanheiro = document.getElementById("btn-banheiro");
+      const btnCopiar = document.getElementById("btn-copiar");
+      const btnReiniciar = document.getElementById("btn-reiniciar");
+
+      let fugirJumps = 0;
+
+      // Botão Fujão: Pula de lugar ao passar o mouse ou encostar no mobile!
+      function moveFugirBtn() {
+        fugirJumps++;
+        if (fugirJumps >= 4) {
+          // Após 4 tentativas frustradas, deixa clicar e mostra a mensagem de pavê
+          btnFugir.style.transform = "none";
+          return;
+        }
+
+        const x = (Math.random() * 120 - 60);
+        const y = (Math.random() * 60 - 30);
+        btnFugir.style.transform = `translate(${x}px, ${y}px)`;
+        showToast("Você tentou fugir, mas a tia bloqueou o corredor!");
+      }
+
+      btnFugir.addEventListener("mouseenter", moveFugirBtn);
+      btnFugir.addEventListener("touchstart", (e) => {
+        if (fugirJumps < 4) {
+          e.preventDefault();
+          moveFugirBtn();
+        }
+      });
+
+      btnFugir.addEventListener("click", () => {
+        showModal("modal-fuga");
+        btnFugir.style.transform = "none";
+        fugirJumps = 0;
+      });
+
+      document.getElementById("btn-fechar-fuga").addEventListener("click", () => {
+        hideModal("modal-fuga");
+        appendParenteBubble("Ainda bem que você não foi embora! Toma aqui mais um pedaço de torta e me diz: quando sai o concurso?", "Parente Aliviado");
+      });
+
+      // Botão Banheiro
+      btnBanheiro.addEventListener("click", () => {
+        showModal("modal-banheiro");
+        let seconds = 4;
+        const countdownEl = document.getElementById("banheiro-countdown");
+        countdownEl.textContent = `Sua tia bate na porta em: ${seconds}s...`;
+
+        const interval = setInterval(() => {
+          seconds--;
+          if (seconds > 0) {
+            countdownEl.textContent = `Sua tia bate na porta em: ${seconds}s...`;
+          } else {
+            clearInterval(interval);
+            hideModal("modal-banheiro");
+            appendParenteBubble("Demorou, hein! Já tava achando que você tinha caído na privada! Aproveitando que voltou aliviado(a): e o namoro?", "Volta do Banheiro");
+          }
+        }, 1000);
+
+        document.getElementById("btn-sair-banheiro").onclick = () => {
+          clearInterval(interval);
+          hideModal("modal-banheiro");
+          appendParenteBubble("Demorou, hein! Mas que bom que voltou pra mesa! Aproveitando que você tá aqui: e o namoro?", "Volta do Banheiro");
+        };
+      });
+
+      // Fechar modal de conquista
+      document.getElementById("btn-fechar-conquista").addEventListener("click", () => {
+        hideModal("modal-conquista");
+        appendParenteBubble("*(Comeu o pavê virtual com orgulho)* Parabéns pela medalha de ouro no almoço de domingo! Agora fala: quando é que você vai casar?", "Orgulho Familiar");
+      });
+
+      // Botão Copiar Conversa (para print/zap)
+      btnCopiar.addEventListener("click", () => {
+        const bubbles = messagesContainer.querySelectorAll(".msg-bubble");
+        if (bubbles.length === 0) {
+          showToast("Nada pra copiar ainda!");
+          return;
+        }
+
+        let transcript = "💬 Conversa no ParenteGPT (Almoço de Domingo):\n\n";
+        bubbles.forEach(b => {
+          transcript += `${b.innerText}\n\n`;
+        });
+        transcript += "---\nTeste você também: ParenteGPT";
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(transcript).then(() => {
+            showToast("Conversa copiada pro clipboard! Manda no Zap!");
+          }).catch(() => {
+            fallbackCopy(transcript);
+          });
+        } else {
+          fallbackCopy(transcript);
+        }
+      });
+
+      // Botão Reiniciar Almoço
+      btnReiniciar.addEventListener("click", () => {
+        if (confirm("Deseja mesmo reiniciar o almoço e começar todas as perguntas do zero?")) {
+          // Limpa mensagens
+          messagesContainer.innerHTML = "";
+          state.questionsCount = 0;
+          state.escapeChance = 99;
+          state.intromissionLevel = 10;
+          state.recentPhrases.clear();
+
+          // Restaura estado e boas-vindas
+          countPerguntas.textContent = "0";
+          chanceEscapar.textContent = "99%";
+          progressFill.style.width = "10%";
+          intromissionLabel.textContent = "Curioso(a) 🙂";
+
+          const initialMsg = document.createElement("div");
+          initialMsg.className = "msg-row msg-parente";
+          initialMsg.innerHTML = `
+            <div class="msg-bubble">
+              <div class="parente-author">👵 Tia do Zap:</div>
+              <p>Opa, sentamos na mesa de novo! Pega mais um pedaço de carne e me responde o que você não respondeu antes!</p>
+              <div class="msg-time">${getCurrentTime()}</div>
+            </div>
+          `;
+          messagesContainer.appendChild(initialMsg);
+          showToast("Almoço reiniciado!");
+        }
+      });
+    }
+
+    // Chips de Sugestão
+    function initChips() {
+      const chips = document.querySelectorAll(".chip-btn");
+      chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+          const text = chip.getAttribute("data-text");
+          if (text) {
+            userInput.value = text;
+            handleUserMessage();
+          }
+        });
+      });
+    }
+
+    // Timer de Inatividade (20 segundos de silêncio)
+    function resetInactivityTimer() {
+      if (state.inactivityTimer) clearTimeout(state.inactivityTimer);
+      state.inactivityTimer = setTimeout(() => {
+        if (!state.isTyping && state.profile.completedOnboarding) {
+          appendParenteBubble("Tá aí? Sumiu… tá com vergonha de responder pra sua própria família?", "Silêncio constrangedor");
+        }
+      }, 20000);
+    }
+
+    /* =========================================================================
+       6. UTILITÁRIOS: MODAIS, TOAST E TEMPO
+       ========================================================================= */
+    function showModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.style.display = "flex";
+    }
+
+    function hideModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.style.display = "none";
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById("app-toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast("Conversa copiada pro clipboard!");
+      } catch (e) {
+        showToast("Não foi possível copiar automaticamente.");
+      }
+      document.body.removeChild(ta);
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    /* =========================================================================
+       7. SUITE DE AUTO-TESTE AUTOMATIZADA (Ativada via ?test=true ou console)
+       ========================================================================= */
+    window.runAutomatedTest = async function() {
+      console.log("Iniciando auto-teste do ParenteGPT...");
+
+      // 1. Preenche e submete formulário de boas-vindas
+      const welcomeForm = document.getElementById("welcome-form");
+      if (document.getElementById("welcome-card").style.display !== "none") {
+        document.getElementById("input-nome").value = "Lucas";
+        document.getElementById("input-idade").value = "28";
+        document.getElementById("input-estado-civil").value = "solteiro(a)";
+        document.getElementById("input-filhos").value = "não tenho";
+        welcomeForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        await sleep(400);
+      }
+
+      // 2. Envia 10 mensagens variadas alternando personalidades
+      const testSequence = [
+        { text: "Hoje choveu muito o dia todo", persona: "tia" },
+        { text: "Fui promovido no trabalho essa semana", persona: "tio" },
+        { text: "Tô muito cansado de reuniões", persona: "tio" },
+        { text: "Como fazer um bolo de chocolate fofinho?", persona: "vovo" },
+        { text: "Tô pensando em viajar nas férias de verão", persona: "vovo" },
+        { text: "Ganho pouco na minha área atual", persona: "coach" },
+        { text: "Quero adotar um gatinho filhote", persona: "coach" },
+        { text: "Me ajuda com um código em JavaScript?", persona: "tia" },
+        { text: "Para de perguntar do meu namoro!", persona: "tio" },
+        { text: "Tenho namorada sim, a gente tá junto!", persona: "vovo" },
+        { text: "Qual a capital da França?", persona: "coach" }
+      ];
+
+      for (let i = 0; i < testSequence.length; i++) {
+        const item = testSequence[i];
+        
+        // Troca personalidade se necessário
+        const personaBtn = document.querySelector(`.persona-btn[data-persona="${item.persona}"]`);
+        if (personaBtn && !personaBtn.classList.contains("active")) {
+          personaBtn.click();
+          await sleep(350);
+        }
+
+        userInput.value = item.text;
+        chatForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        // Aguarda resposta
+        await sleep(1800);
+      }
+
+      console.log("Auto-teste concluído com 11 interações!");
+      console.log("Perguntas feitas:", state.questionsCount);
+      console.log("Chance de escapar:", state.escapeChance + "%");
+      console.log("Intromissão:", state.intromissionLevel + "%", intromissionLabel.textContent);
+    };
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    if (window.location.search.includes("test=true")) {
+      window.addEventListener("load", () => {
+        setTimeout(window.runAutomatedTest, 500);
+      });
+    }
+
+    if (window.location.search.includes("test_skip=true")) {
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("btn-skip-welcome").click();
+        }, 300);
+      });
+    }
+
+    if (window.location.search.includes("test_banheiro=true")) {
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("btn-skip-welcome").click();
+          document.getElementById("btn-banheiro").click();
+        }, 300);
+      });
+    }
+
+    if (window.location.search.includes("test_fuga=true")) {
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("btn-skip-welcome").click();
+          showModal("modal-fuga");
+        }, 300);
+      });
+    }
+  </script>
+</body>
+</html>
